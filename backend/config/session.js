@@ -21,6 +21,13 @@ module.exports.session = {
   secret: '5cb24501f7e840855faeb9477466ba25',
 
 
+  cookie: {
+    maxAge: 1000 * 60 * 30 // 30 phút
+  },
+
+  ttl: 30// 30 phút
+
+
   /***************************************************************************
   *                                                                          *
   * Customize when built-in session support will be skipped.                 *
