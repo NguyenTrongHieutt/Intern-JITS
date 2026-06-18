@@ -25,7 +25,8 @@ module.exports.policies = {
     logout: 'isLoggedIn'
   },
   wallet: {
-    balance: 'isLoggedIn'
+    balance: 'isLoggedIn',
+    transfer: 'isLoggedIn'
   },
 
 };

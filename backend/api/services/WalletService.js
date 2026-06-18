@@ -27,6 +27,92 @@ module.exports = {
       sails.log.error('WalletService.getBalance error:', error);
       throw new AppError(errorCodes.SERVER_ERROR, messages.SERVER_ERROR);
     }
+  },
+
+  transfer: async function (senderCustomerId, receiverPhone, amount) {
+    try {
+      var sender = await Customer.findOne({ id: senderCustomerId });
+
+      if (!sender) {
+        throw new AppError(errorCodes.NOT_FOUND, messages.SESSION_REQUIRED);
+      }
+
+      if (String(sender.phone) === String(receiverPhone)) {
+        throw new AppError(errorCodes.FORBIDDEN, messages.SELF_TRANSFER, {
+          field: 'receiverPhone'
+        });
+      }
+
+      var receiver = await Customer.findOne({ phone: receiverPhone });
+
+      if (!receiver) {
+        throw new AppError(errorCodes.NOT_FOUND, messages.RECEIVER_NOT_FOUND, {
+          field: 'receiverPhone'
+        });
+      }
+
+      var senderPocket = await Pocket.findOne({ owner: sender.id });
+
+      if (!senderPocket) {
+        throw new AppError(errorCodes.NOT_FOUND, messages.WALLET_NOT_FOUND);
+      }
+
+      var receiverPocket = await Pocket.findOne({ owner: receiver.id });
+
+      if (!receiverPocket) {
+        throw new AppError(errorCodes.NOT_FOUND, messages.WALLET_NOT_FOUND);
+      }
+
+      var currentBalance = Number(senderPocket.balance || 0);
+
+      if (currentBalance < amount) {
+        throw new AppError(errorCodes.INSUFFICIENT_BALANCE, messages.INSUFFICIENT_BALANCE, {
+          availableBalance: currentBalance,
+          requestedAmount: amount
+        });
+      }
+
+      var newSenderBalance = currentBalance - amount;
+      var newReceiverBalance = Number(receiverPocket.balance || 0) + amount;
+
+      await Pocket.updateOne({ id: senderPocket.id })
+        .set({ balance: newSenderBalance });
+
+      await Pocket.updateOne({ id: receiverPocket.id })
+        .set({ balance: newReceiverBalance });
+
+      var transaction = await Transaction.create({
+        sender: sender.id,
+        receiver: receiver.id,
+        amount: amount,
+        status: 'SUCCESS'
+      }).fetch();
+
+      return {
+        transaction: {
+          id: transaction.id,
+          sender: {
+            phone: sender.phone
+          },
+          receiver: {
+            phone: receiver.phone
+          },
+          amount: transaction.amount,
+          status: transaction.status
+        },
+        senderPocket: {
+          id: senderPocket.id,
+          balance: newSenderBalance
+        }
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      sails.log.error('WalletService.transfer error:', error);
+      throw new AppError(errorCodes.SERVER_ERROR, messages.SERVER_ERROR);
+    }
   }
 
 };

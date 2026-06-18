@@ -24,6 +24,7 @@ module.exports.routes = {
   'POST /auth/login': 'auth/login',
   'POST /auth/logout': 'auth/logout',
   'POST /wallet/balance': 'wallet/balance',
+  'POST /wallet/transfer': 'wallet/transfer',
 
   /***************************************************************************
    *                                                                          *
