@@ -18,6 +18,7 @@ module.exports = {
   SELF_TRANSFER: 'Không được chuyển tiền cho chính mình',
   INSUFFICIENT_BALANCE: 'Số dư không đủ',
   TRANSFER_SUCCESS: 'Chuyển tiền thành công',
-  SERVER_ERROR: 'Lỗi hệ thống'
-
+  SERVER_ERROR: 'Lỗi hệ thống',
+  PAGINATION_REQUIRED_FIELDS: 'Thiếu thông tin phân trang',
+  INVALID_PAGINATION: 'Thông tin phân trang không hợp lệ'
 };
