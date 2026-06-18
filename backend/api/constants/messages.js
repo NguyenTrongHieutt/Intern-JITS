@@ -11,6 +11,7 @@ module.exports = {
   LOGIN_SUCCESS: 'Đăng nhập thành công',
   LOGOUT_SUCCESS: 'Đăng xuất thành công',
   SESSION_REQUIRED: 'Chưa đăng nhập',
+  WALLET_NOT_FOUND: 'Ví không tồn tại',
   SERVER_ERROR: 'Lỗi hệ thống'
 
 };
