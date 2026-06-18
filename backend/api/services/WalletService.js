@@ -6,10 +6,6 @@ module.exports = {
 
   getBalance: async function (customerId) {
     try {
-      if (!customerId) {
-        throw new AppError(errorCodes.BAD_REQUEST, messages.SESSION_REQUIRED);
-      }
-
       var pocket = await Pocket.findOne({ owner: customerId });
 
       if (!pocket) {
@@ -111,6 +107,62 @@ module.exports = {
       }
 
       sails.log.error('WalletService.transfer error:', error);
+      throw new AppError(errorCodes.SERVER_ERROR, messages.SERVER_ERROR);
+    }
+  },
+
+  getTransactions: async function (customerId, page, limit) {
+    try {
+      var criteria = {
+        or: [
+          { sender: customerId },
+          { receiver: customerId }
+        ]
+      };
+      var skip = (page - 1) * limit;
+      var total = await Transaction.count(criteria);
+
+      var transactions = await Transaction.find(criteria)
+        .sort('createdAt DESC')
+        .skip(skip)
+        .limit(limit)
+        .populate('sender')
+        .populate('receiver');
+      var totalPages = Math.ceil(total / limit);
+
+      return {
+        transactions: transactions.map( (transaction) =>  {
+          var isOutgoing = transaction.sender && transaction.sender.id === customerId;
+
+          return {
+            id: transaction.id,
+            type: isOutgoing ? 'OUT' : 'IN',
+            sender: {
+              phone: transaction.sender && transaction.sender.phone
+            },
+            receiver: {
+              phone: transaction.receiver && transaction.receiver.phone
+            },
+            amount: transaction.amount,
+            status: transaction.status,
+            createdAt: transaction.createdAt
+          };
+        }),
+        pagination: {
+          page: page,
+          limit: limit,
+          total: total,
+          totalPages: totalPages,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1
+        }
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+
+      sails.log.error('WalletService.getTransactions error:', error);
       throw new AppError(errorCodes.SERVER_ERROR, messages.SERVER_ERROR);
     }
   }
