@@ -24,5 +24,8 @@ module.exports.policies = {
     login: true,
     logout: 'isLoggedIn'
   },
+  wallet: {
+    balance: 'isLoggedIn'
+  },
 
 };

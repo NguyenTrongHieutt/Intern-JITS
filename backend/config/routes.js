@@ -23,6 +23,7 @@ module.exports.routes = {
   'POST /auth/register': 'auth/register',
   'POST /auth/login': 'auth/login',
   'POST /auth/logout': 'auth/logout',
+  'POST /wallet/balance': 'wallet/balance',
 
   /***************************************************************************
    *                                                                          *
