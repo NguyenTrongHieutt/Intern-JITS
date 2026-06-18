@@ -12,6 +12,12 @@ module.exports = {
   LOGOUT_SUCCESS: 'Đăng xuất thành công',
   SESSION_REQUIRED: 'Chưa đăng nhập',
   WALLET_NOT_FOUND: 'Ví không tồn tại',
+  TRANSFER_REQUIRED_FIELDS: 'Thiếu số điện thoại người nhận hoặc số tiền chuyển',
+  INVALID_TRANSFER_AMOUNT: 'Số tiền chuyển không hợp lệ',
+  RECEIVER_NOT_FOUND: 'Người nhận không tồn tại',
+  SELF_TRANSFER: 'Không được chuyển tiền cho chính mình',
+  INSUFFICIENT_BALANCE: 'Số dư không đủ',
+  TRANSFER_SUCCESS: 'Chuyển tiền thành công',
   SERVER_ERROR: 'Lỗi hệ thống'
 
 };
