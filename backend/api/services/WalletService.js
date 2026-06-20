@@ -75,19 +75,36 @@ module.exports = {
     }
   },
 
-  getTransactions: async function (customerId, page, limit) {
+  getTransactions: async function (customerId, page, limit, options) {
     try {
+      options = options || {};
       var criteria = {
         or: [
           { sender: customerId },
           { receiver: customerId }
         ]
       };
+
+      var createdAtCriteria = {};
+
+      if (options.from !== undefined && options.from !== null) {
+        createdAtCriteria['>='] = options.from;
+      }
+
+      if (options.to !== undefined && options.to !== null) {
+        createdAtCriteria['<='] = options.to;
+      }
+
+      if (Object.keys(createdAtCriteria).length > 0) {
+        criteria.createdAt = createdAtCriteria;
+      }
+
+      var sortDirection = options.sort === 'asc' ? 'ASC' : 'DESC';
       var skip = (page - 1) * limit;
       var total = await Transaction.count(criteria);
 
       var transactions = await Transaction.find(criteria)
-        .sort('createdAt DESC')
+        .sort('createdAt ' + sortDirection)
         .skip(skip)
         .limit(limit)
         .populate('sender')
