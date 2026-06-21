@@ -78,8 +78,7 @@ module.exports = {
           code: errorCodes.BAD_REQUEST,
           message: messages.INVALID_PAGINATION,
           details: {
-            field: 'from',
-            message: 'from must be before or equal to to'
+            field: 'from'
           }
         };
       }
